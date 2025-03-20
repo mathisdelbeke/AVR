@@ -39,8 +39,14 @@ void uart_print(const char *str) {          // Start with pointer to the first c
     }
 }
 
-void uart_print_int(int32_t num) {
+void uart_print_int32(uint32_t num) {
     char buffer[12];                        // Max chars needed for int32_t numbers
+    itoa(num, buffer, 10);                  // Convert number into chars
+    uart_print(buffer);
+}
+
+void uart_print_int16(uint16_t num) {
+    char buffer[7];                        // Max chars needed for int32_t numbers
     itoa(num, buffer, 10);                  // Convert number into chars
     uart_print(buffer);
 }
