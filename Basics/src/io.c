@@ -1,4 +1,3 @@
-
 #include "io.h"
 
 #define LED_PIN PB5

@@ -2,6 +2,7 @@
 #define PWM_H
 
 #include <avr/io.h>
+#include "uart.h"
 
 void pwm_init();
 void set_brightness(uint16_t duty);

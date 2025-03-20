@@ -4,9 +4,6 @@
 #include "adc.h"
 #include "pwm.h"
 
-const unsigned long PRINT_DELAY = 1000;
-uint32_t last_time = 0;
-
 int main(void) {
     io_init();
     timer_init();
@@ -18,11 +15,7 @@ int main(void) {
     
     while (1) {
         check_button();
-        if ((millis() - last_time) >= PRINT_DELAY) {
-            uart_print_int32((last_time / 1000));
-            uart_print("\r\n");
-            last_time = millis();
-        }
+        print_seconds();
         uint16_t analog_value = adc_read(0);
         set_brightness(analog_value);
     }

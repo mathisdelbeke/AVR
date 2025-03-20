@@ -1,6 +1,9 @@
 #include "millis.h"
 
+const unsigned long PRINT_DELAY = 1000;
+
 volatile uint32_t millis_counter = 0;   // Number of milliseconds that have passed, volatile for external events
+uint32_t last_time = 0;
 
 void millis_init() {
     TCCR0A = (1 << WGM01);              // Enable Clear Timer on Compare Match mode in Timer/Counter Control Register A Timer 0 
@@ -19,5 +22,13 @@ uint32_t millis() {
     ms = millis_counter;
     sei();                              // Quickly enable global interrupts again
     return ms;
+}
+
+void print_seconds() {
+    if ((millis() - last_time) >= PRINT_DELAY) {
+        uart_print_int32((last_time / 1000));
+        uart_print("\r\n");
+        last_time = millis();
+    }
 }
 

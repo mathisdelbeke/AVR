@@ -1,5 +1,4 @@
 #include "pwm.h"
-#include "uart.h"
 
 void pwm_init() {
     DDRD |= (1 << PB3);
@@ -21,5 +20,4 @@ void set_brightness(uint16_t adc_value) {
     uart_print(" -> Brightness: ");
     uart_print_int16(brightness);
     uart_print("\r\n");
-
 }
