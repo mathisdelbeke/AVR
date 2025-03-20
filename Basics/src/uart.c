@@ -46,7 +46,7 @@ void uart_print_int32(uint32_t num) {
 }
 
 void uart_print_int16(uint16_t num) {
-    char buffer[7];                        // Max chars needed for int32_t numbers
+    char buffer[6];                         // Max chars needed for int16_t numbers
     itoa(num, buffer, 10);                  // Convert number into chars
     uart_print(buffer);
 }

@@ -7,7 +7,7 @@ void adc_init() {
 }
 
 uint16_t adc_read(uint8_t channel) {
-    ADMUX = (ADMUX & 0xF8);          // Clears previous channel
+    ADMUX = (ADMUX & 0xF8);          // Clears previous channel selection
     ADMUX |= (channel & 0x07);       // Multiplexes channel, ensured it is between 0 and 7
     ADCSRA |= (1 << ADSC);           // Start ADC in Control and Status Register
     while (ADCSRA & (1 << ADSC));    // Polls for Start Conversion bit
