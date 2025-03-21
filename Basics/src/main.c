@@ -13,10 +13,16 @@ int main(void) {
     adc_init();
     pwm_init();
     
+    uint16_t analog_value = 0;
+    adc_start_conversion(0);
+
     while (1) {
         check_button();
         print_seconds();
-        uint16_t analog_value = adc_read(0);
+        if (adc_is_ready()) {
+            analog_value = adc_get_value();
+            adc_start_conversion(0);
+        }
         set_brightness(analog_value);
     }
 }
