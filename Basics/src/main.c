@@ -2,7 +2,6 @@
 #include "uart.h"
 #include "adc.h"
 #include "pwm_led.h"
-#include "rotary.h"
 
 int main(void) {
     millis_init();
@@ -24,6 +23,5 @@ int main(void) {
             }
             set_brightness(analog_value);
         }
-        rotary_read();
     }
 }
