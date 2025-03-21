@@ -6,7 +6,7 @@ volatile uint32_t millis_counter = 0;   // Number of milliseconds that have pass
 uint32_t last_time = 0;
 
 void millis_init() {
-    TCCR0A = (1 << WGM01);              // Enable Clear Timer on Compare Match mode in Timer/Counter Control Register A Timer 0 
+    TCCR0A = (1 << WGM01);              // Enable Clear Timer on Compare Match mode with Wave Generation Mode bits
     TCCR0B = (1 << CS01) | (1 << CS00); // Configure prescaler to 64 in Timer/Counter Control B Timer 0
     OCR0A = 249;                        // The compare value in Output Compare Register A Timer 0
     TIMSK0 |= (1 << OCIE0A);            // Enables Timer 0 Compare Match A interrupt in Timer/Counter Interrupt Mask Register Timer 0
