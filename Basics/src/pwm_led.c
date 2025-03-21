@@ -4,11 +4,13 @@
 #define BUTTON_PIN PD2
 
 volatile uint8_t button_pressed = 0;   
+volatile uint8_t debounce_flag = 0;
 uint8_t pwm_on = 0;
 
 void pwm_led_init() {
     pwm_init();
     button_init();
+    timer_init();
     interrupts_init();
 }
 
@@ -34,6 +36,13 @@ void button_init() {
     PORTD |= (1 << BUTTON_PIN); // Enable pull-up
 }
 
+void timer_init() {
+    TCCR1B |= (1 << WGM12);   // CTC mode
+    TIMSK1 |= (1 << OCIE1A);  // Interrupt compare match
+    TCCR1B |= (1 << CS12);    // Prescaler 256
+    OCR1A = 10000;            // Compare value
+}
+
 void interrupts_init() {
     EICRA |= (1 << ISC01);  // Configure falling edge as trigger in External Interrupt Control Register A
     EIMSK |= (1 << INT0);   // Enable INT0 interrupt in External Interrupt Mask Register
@@ -49,8 +58,15 @@ void check_button() {           // Poll if interrupt has happened
 }
 
 ISR(INT0_vect) {            // ISR for external interrupt 0 (INT0)
-    _delay_ms(100);         // !BAD! bussy waiting but no timer left
-    if (!(PIND & (1 << BUTTON_PIN))) {
-        button_pressed = 1;
+    if (!debounce_flag) {   // If debounce time has passed
+        debounce_flag = 1;
+        TCCR1B |= (1 << CS12);  // Start timer
     }
+}
+
+ISR(TIMER1_COMPA_vect) {    // When compare value of timer been reached
+    button_pressed = 1;     
+    debounce_flag = 0;      // Debounce time has passed
+    TCCR1B &= ~(1 << CS12); // Stop timer
+    TCNT1 = 0;              // reset timer
 }

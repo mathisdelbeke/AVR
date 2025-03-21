@@ -25,8 +25,5 @@ int rotary_read() {
         }
     }
     prev_clk_state = clk_state;
-
-    //uart_print_int16(rotary_pos);
-    //uart_print("\r\n");
     return rotary_pos;
 }
