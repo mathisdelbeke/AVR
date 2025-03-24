@@ -1,6 +1,7 @@
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include <util/delay.h>
+#include <avr/sleep.h>
 #include "uart.h"
 
 #define LED_PIN PB5
@@ -11,14 +12,21 @@ void variable_delay_ms(uint16_t ms) {
     }
 }
 
+ISR(WDT_vect) {
+    uart_print_string("\nSave something before reset\r\n\n");
+}
+
 int main(void) {
     uart_init(9600);
     DDRB |= (1 << LED_PIN); 
     PORTB |= (1 << LED_PIN);    // Led will turn off during reset
     uint16_t delay_time = 0;    // Current workload
     
-    wdt_enable(WDTO_1S);        // Enable Watchdog Timer with a 1s timeout
-
+    cli(); // Disable global interrupts
+    MCUSR &= ~(1 << WDRF); // Clear Watchdog Reset Flag
+    WDTCSR |= (1 << WDCE) | (1 << WDE); // Enable configuration mode
+    WDTCSR = (1 << WDIE) | (1 << WDE) | (1 << WDP2) | (1 << WDP1); // Enable interrupt mode, 1s timeout
+    sei(); // Enable global interrupts
 
     while (1) {
         variable_delay_ms(delay_time);  // Simulate workload
