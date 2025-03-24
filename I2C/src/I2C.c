@@ -1,0 +1,45 @@
+#include "I2C.h"
+
+#define F_CPU 16000000UL
+#define SCL_CLOCK 100000L   
+// 100 kHz common Standard Mode
+
+void i2c_init() {
+    TWSR &= ~((1 << TWPS0) | (1 << TWPS1)); // Prescaler of 1 in Status Register
+    TWBR = ((F_CPU/SCL_CLOCK)-16)/(2*1);    // Two-Wire Bit Rate Register set for 100 kHz
+    TWCR = (1<<TWEN);                       // Enable in Two Wire Control Register
+}
+
+// Master is starting communication 
+void i2c_start(void) {
+    TWCR = (1<<TWSTA) | (1<<TWEN) | (1<<TWINT); // START condition bit, enable bit, clear interrupt flag
+    while (!(TWCR & (1<<TWINT)));               // Wait for interrupt flag to be 1 (=done)
+}
+
+// Master sends address on the bus and waits for ACK
+void i2c_write_address(uint8_t address) {
+    TWDR = address;                 // Load address in Data Register
+    TWCR = (1<<TWEN) | (1<<TWINT);  // Begin transmission, enable bit, clear interrupt flag
+    while (!(TWCR & (1<<TWINT)));   // Wait for interrupt flag to be 1 (=done)
+}
+
+// Master sends data to slave and waits for ACK
+void i2c_write_data(uint8_t data) {
+    TWDR = data;                    // Load data in Data Register
+    TWCR = (1<<TWEN) | (1<<TWINT);  // Begin transmission, enable bit, clear interrupt flag
+    while (!(TWCR & (1<<TWINT)));   // Wait for interrupt flag to be 1 (=done)
+}
+
+// Master reads byte from slave
+uint8_t i2c_read_data(uint8_t ack) {
+    // If ack == 1, master sets TWEA and sends ACK, expects more data
+    // If ack == 0, master clears TWEA sends NACK, stop reading
+    TWCR = (1<<TWEN) | (1<<TWINT) | (ack ? (1<<TWEA) : 0);
+    while (!(TWCR & (1<<TWINT)));   // Wait for interrupt flag to be 1 (=done)
+    return TWDR;                    // Data Register holds received byte
+}
+
+// Master sends STOP to bus, available again
+void i2c_stop(void) {
+    TWCR = (1<<TWSTO) | (1<<TWEN) | (1<<TWINT); // STOP condition bit
+}
