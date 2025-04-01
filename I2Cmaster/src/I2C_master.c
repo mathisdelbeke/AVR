@@ -1,4 +1,4 @@
-#include "I2C.h"
+#include "I2C_master.h"
 
 #define F_CPU 16000000UL
 #define SCL_CLOCK 100000L   

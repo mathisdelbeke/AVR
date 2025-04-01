@@ -1,5 +1,5 @@
-#ifndef I2C_H
-#define I2C_H
+#ifndef I2C_MASTER_H
+#define I2C_MASTER_H
 
 #include <avr/io.h>
 #include "uart.h"
