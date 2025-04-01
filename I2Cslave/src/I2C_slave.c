@@ -19,14 +19,14 @@ void i2c_slave_init(uint8_t address) {
 ISR(TWI_vect) {
     switch (TWSR & 0xF8) {
         case 0xA8:  // Own SLA+R has been received, ACK sent
-        case 0xB8:  // Data byte has been transmitted, ACK received
+        case 0xB8:  // Master has received byte and wants more
             TWDR = message[send_index++];  // Load next byte
             TWCR = (1 << TWEA) | (1 << TWEN) | (1 << TWINT) | (1 << TWIE);  // Enable ACK for next byte
             break;
 
-        case 0xC8:  // Data byte has been transmitted, NACK received (last byte sent)
+        case 0xC8:  // Master has received last byte, NACK received
             send_index = 0;  // Reset index for next transaction
-            TWCR = (1 << TWEA) | (1 << TWEN) | (1 << TWINT) | (1 << TWIE);  // Enable ACK for next request
+            TWCR = (1 << TWEA) | (1 << TWEN) | (1 << TWINT) | (1 << TWIE);
             break;
 
         case 0x60:  // Own SLA+W has been received, ACK sent
