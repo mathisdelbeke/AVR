@@ -1,7 +1,7 @@
 #include "SPImaster.h" 
 #include "uart.h"
 
-const char message[] = "Hello Slave";
+const char message[] = "Hello Slave\r\n";
 
 void spi_master_init(void) {
     // Set MOSI and SCK as output, others as input
