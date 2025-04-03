@@ -7,13 +7,11 @@ const char message[] = "Hello Master\r\n";
 const uint8_t message_length = sizeof(message);
 
 void spi_slave_init(void) {
-    // Set MISO as output
     DDRB |= (1 << PB4);  // MISO output
     DDRB &= ~((1 << PB3) | (1 << PB5) | (1 << PB2)); // MOSI, SCK, SS as input
 
-    // Enable SPI in slave mode
+    // Enable SPI in slave mode with interrupt
     SPCR = (1 << SPE) | (1 << SPIE);
-    SPDR = message[0];
     sei();
 }
 
