@@ -1,6 +1,9 @@
 #include "SPImaster.h" 
 #include "uart.h"
 
+volatile uint8_t spi_received_data = 0;  
+volatile uint8_t spi_transmission_complete = 0;  
+
 const char message[] = "Hello Slave\r\n";
 
 void spi_master_init(void) {
@@ -9,22 +12,33 @@ void spi_master_init(void) {
     DDRB &= ~(1 << PB4);  // MISO as input
 
     // Enable SPI, Set as Master, Set clock rate fck/16
-    SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR0);
+    SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR0) | (1 << SPIE);
+    sei();
 }
 
-void spi_master_transmit(uint8_t data) {
+uint8_t spi_master_transmit(uint8_t data) {
+    spi_transmission_complete = 0;
     SPDR = data; // Load data into the SPI data register
-    while (!(SPSR & (1 << SPIF))); // Wait until transmission is complete
+    while (!spi_transmission_complete); // Wait until transmission is complete
+    return spi_received_data;
+}
+
+// SPI Interrupt Service Routine (ISR)
+ISR(SPI_STC_vect) {
+    spi_received_data = SPDR;  // Read received data
+    spi_transmission_complete = 1;  // Set flag to indicate data is received
 }
 
 int main(void) {
     uart_init(9600);
     spi_master_init();
     
+    uint8_t received_byte = 0;
     while (1) {
-        uart_transmit('t');
         for (int i = 0; message[i] != '\0'; i++) {
-            spi_master_transmit(message[i]); 
+            received_byte = spi_master_transmit(message[i]);
+            uart_transmit(received_byte);
+            _delay_ms(10);
         }
         _delay_ms(1000);
     }

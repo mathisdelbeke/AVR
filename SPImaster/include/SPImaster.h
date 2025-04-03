@@ -5,6 +5,6 @@
 #include <util/delay.h>
 
 void spi_master_init(void);
-void spi_master_transmit(uint8_t data);
+uint8_t spi_master_transmit(uint8_t data);
 
 #endif 
