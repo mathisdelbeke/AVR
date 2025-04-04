@@ -7,11 +7,10 @@ volatile uint8_t spi_transmission_complete = 0;
 const char message[] = "Hello Slave\r\n";
 
 void spi_master_init(void) {
-    // Set MOSI and SCK as output, others as input
     DDRB |= (1 << PB3) | (1 << PB5) | (1 << PB2);  // MOSI, SCK, SS as output
     DDRB &= ~(1 << PB4);  // MISO as input
 
-    // Enable SPI, Set as Master, Set clock rate fck/16
+    // Enable SPI, Set as Master, Set clock rate fck/16, enable interrupt
     SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR0) | (1 << SPIE);
     sei();
 }
@@ -19,14 +18,13 @@ void spi_master_init(void) {
 uint8_t spi_master_transmit(uint8_t data) {
     spi_transmission_complete = 0;
     SPDR = data; // Load data into the SPI data register
-    while (!spi_transmission_complete); // Wait until transmission is complete
+    while (!spi_transmission_complete); // Wait until response
     return spi_received_data;
 }
 
-// SPI Interrupt Service Routine (ISR)
 ISR(SPI_STC_vect) {
     spi_received_data = SPDR;  // Read received data
-    spi_transmission_complete = 1;  // Set flag to indicate data is received
+    spi_transmission_complete = 1; 
 }
 
 int main(void) {

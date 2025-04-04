@@ -15,9 +15,8 @@ void spi_slave_init(void) {
     sei();
 }
 
-// SPI Interrupt Service Routine (ISR) – triggered when data is received
 ISR(SPI_STC_vect) {
-    received_data = SPDR; // Read received data
+    received_data = SPDR; 
     uart_transmit(received_data);
     SPDR = message[send_index++];
     if (send_index == message_length) send_index = 0;

@@ -4,6 +4,5 @@
 #include <avr/io.h>
 
 void spi_slave_init(void);
-uint8_t spi_slave_receive(void);
 
 #endif 
