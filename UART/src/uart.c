@@ -46,7 +46,7 @@ void uart_print_signed(int32_t num) {
     uart_print_string(buffer);
 }
 
-void uart_print_unsigned(int32_t num) {
+void uart_print_unsigned(uint32_t num) {
     char buffer[12];                   // Max chars needed
     utoa(num, buffer, 10);             // Convert unsigned number into chars
     uart_print_string(buffer);
